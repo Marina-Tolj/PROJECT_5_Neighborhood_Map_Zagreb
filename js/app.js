@@ -6,7 +6,7 @@
 // will leave only that marker present on the map.
 
 // The latitude and longitude of the city of Zagreb
-var position = [45.800736, 15.979681];
+var position = [45.802512, 15.959353];
 
 // All the data needed for creating map markers, 
 // list and dropdown list, each marker has a type specific image
@@ -15,63 +15,73 @@ var mapMarkers= [
             name: "Bundek",
             type: "Park",
             imgSrc: "images/parkmarker.png",
-            position: [45.785924, 15.982728]
+            position: [45.785924, 15.982728],
+            address: "Ulica Damira Tomljanovića 15"
         },
         {
             name: "Maksimir",
             type: "Park",
             imgSrc: "images/parkmarker.png",
-            position: [45.823619, 16.016888]
+            position: [45.823619, 16.016888],
+            address: "Maksimirski Perivoj"
         },
         {
             name: "Jarun",
             type: "Park",
             imgSrc: "images/parkmarker.png",
-            position: [45.778023, 15.926423]
+            position: [45.778023, 15.926423],
+            address: "Aleja Matije Ljubeka"
         },
         {
             name: "Zrinjevac",
             type: "Park",
             imgSrc: "images/parkmarker.png",
-            position: [45.808663, 15.978522]
+            position: [45.808663, 15.978522],
+            address: "Park Zrinjevac"
         },
         {
             name: "Dom Sportova",
             type: "Sport",
             imgSrc: "images/sportsmarker.png",
-            position: [45.807586, 15.952000]
+            position: [45.807586, 15.952000],
+            address: "Trg Krešimira Ćosića 11"
         },
         {
             name: "Arena Zagreb",
             type: "Sport",
             imgSrc: "images/sportsmarker.png",
-            position: [45.771018, 15.943074]
+            position: [45.771018, 15.943074],
+            address: "Arena Zagreb"
         },
         {
             name: "National and University Library in Zagreb",
             type: "Culture",
             imgSrc: "images/culturemarker.png",
-            position: [45.796517, 15.977320]
+            position: [45.796517, 15.977320],
+            address: "Hrvatske Bratske Zajednice 4"
         },
         {
             name: "Museum of Contemporary Art, Zagreb",
             type: "Culture",
             imgSrc: "images/culturemarker.png",
-            position: [45.778621, 15.982556]
+            position: [45.778621, 15.982556],
+            address: "Avenija Dubrovnik 17"
         },
         {
-            name: "Pub Mali Medo",
+            name: "Pivnica Mali Medo",
             type: "Food",
             imgSrc: "images/foodmarker.png",
-            position: [45.815676, 15.976573]
+            position: [45.815676, 15.976573],
+            address: "Ul. Ivana Tkalčića 36"
         },
         {
-            name: "Restaurant Ilsecondo",
+            name: "Restoran Ilsecondo",
             type: "Food",
             imgSrc: "images/foodmarker.png",
-            position: [45.776986, 15.9747]
+            position: [45.776986, 15.9747],
+            address: "Avenija Dubrovnik 12"
         }
- ]
+];
 
 // Map styles Array used to customize Google map
 // Source: https://snazzymaps.com/style/22/old-timey
@@ -160,73 +170,85 @@ function createMarker(data) {
         title: mapMarkers[data].name    
     });
 
-    // When a map marker is clicked on is triggers the wikiLinksOnMarkerClick function, 
+    // When a map marker is clicked on it triggers the markerEvents function, 
     // the function stores the mapMarker’s name in the linkName variable that is used by 
-    // the loadWikiLinks function. LoadWikiLinks function opens a window containing Wikipedia 
-    // links for selected spot
-    google.maps.event.addListener(marker, 'click', function wikiLinksOnMarkerClick() { 
+    // the loadWikiLinks and loadplaceTitle function. LoadWikiLinks function opens a window containing Wikipedia 
+    // links for selected spot. LoadStreetView function takes the marker’s address, stored in the linkAddress 
+    // variable, as an argument and displays a Google street view image below the  Wikipedia links. 
+    // The LoadplaceTitle appends the name of the marker on the top of the info window.
+    google.maps.event.addListener(marker, 'click', function markerEvents() {   
         linkName = mapMarkers[data].name;
-        console.log(linkName);
+        linkAddress = mapMarkers[data].address;
         loadWikiLinks();
-    });
-    
-    // Adding an animation when user clicks on the individual marker, 
-    // the marker will bounce until user clicks on it again or after a period of time
-    google.maps.event.addListener(marker, 'click', function toggleBounce() {
+        loadStreetView();
+        loadplaceTitle();
+        infowindow.open(map, marker);
+
+        // Adding an animation when user clicks on the individual marker, 
+        // the marker will bounce until user clicks on it again or after a period of time
         if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
         } else {
             marker.setAnimation(google.maps.Animation.BOUNCE);
         }
-
         // Setting a function that stops the marker from bouncing after a period of time
         var bounceTimeout = setTimeout(function(){
         marker.setAnimation(null);
-        }, 8000);
+        }, 4000);
     });
+    
     // Ads every marker to the markerArray 
     markerArray[data] = marker;
     // Returns every generated marker
     return marker;  
     }
 
-// Function for generating Google Map
-function displayGoogleMaps() {
+// Setting the variable infoContent to be the contents of wikipedia-container, 
+// infoContent is used by Google Map infowindow
+var infoContent = document.getElementById("wikipedia-container");
 
-    // Setting the map Lat and Long to Zagreb coordinates
-    var latLng = new google.maps.LatLng(position[0], position[1]);
+var infowindow;
 
-    // Setting map options-> how the map will look like
-    var mapOptions = {
-        zoom: 13, // initialize zoom level - the max value is 21
-        streetViewControl: false, // hide the yellow Street View pegman
-        scaleControl: true, // allow users to zoom the Google Map
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        center: latLng,
-        styles: mapStyle // uses custom array mapStyle to change the style of the map
-    };
+
+// Function is called on Google Map api successful callback 
+function onGoogleLoad(){
+
+    // Creating Google infowindow and setting the content to above 
+    // created variable infoContent
+    infowindow = new google.maps.InfoWindow({
+    content: infoContent
+    });
+
+    // Function for generating Google Map
+    function displayGoogleMaps() {
+
+        // Setting the map Lat and Long to Zagreb coordinates
+        var latLng = new google.maps.LatLng(position[0], position[1]);
+
+        // Setting map options-> how the map will look like
+        var mapOptions = {
+            zoom: 13, // initialize zoom level - the max value is 21
+            streetViewControl: false, // hide the yellow Street View pegman
+            scaleControl: true, // allow users to zoom the Google Map
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            center: latLng,
+            styles: mapStyle // uses custom array mapStyle to change the style of the map
+        };
     
-    // Binds the Goggle Map to the “googlemaps” div in html
-    map = new google.maps.Map(document.getElementById('googlemaps'),
-        mapOptions);
+        // Binds the Goggle Map to the “googlemaps” div in html
+        map = new google.maps.Map(document.getElementById('googlemaps'),
+            mapOptions);
  
-    // Loops through all the mapMarkers array of objects, and creates 
-    // a marker on the map for each one
-    for (var i = 0; i < mapMarkers.length; i++) {
-        createMarker(i);
-    }(marker, i);
+        // Loops through all the mapMarkers array of objects, and creates 
+        // a marker on the map for each one
+        for (var i = 0; i < mapMarkers.length; i++) {
+            createMarker(i);
+        }
+    }
+    // Starts the function for generating the Google map and all markers 
+    // on the initial load of the window 
+    google.maps.event.addDomListener(window, 'load', displayGoogleMaps);
 }
-
-// Starts the function for generating the Google map and all markers 
-// on the initial load of the window 
-google.maps.event.addDomListener(window, 'load', displayGoogleMaps);
-
-// Function that ViewModel uses to generate the list of all the map markers, 
-// stores the individual marker’s name and type
-var Mark = function(data){
-    this.name = ko.observable(data.name);
-    this.type = ko.observable(data.type);
-};
 
 // Creating an array with initial value of “All”, array is used to store and 
 // create options to choose from in the dropdown list containing types of amenities
@@ -238,18 +260,18 @@ var lastMapMarker = 0;
 // Loops through all mapMarkers if the type of the marker is not present it pushes the 
 // type into the otionValuesArray that is used to populate the dropdown list
 for (var i = 0; i < mapMarkers.length; i++) {
-    if (!(mapMarkers[i].type == lastMapMarker)){
+    if ((mapMarkers[i].type !== lastMapMarker)){
         optionValuesArray.push(mapMarkers[i].type);
     }
     // Stores the current value of mapMarket type into the lastMapMarker variable
-    lastMapMarker = mapMarkers[i].type
+    lastMapMarker = mapMarkers[i].type;
 }
 
 // Sets map on all the markers in the markerArray
 function setMapOnAll(map) {
     for (var i = 0; i < markerArray.length; i++) {
             markerArray[i].setMap(map);
-    };
+    }
 }
 
 // Uses setMapOnAll function to loop through all the markers in markerArray and 
@@ -259,37 +281,54 @@ function clearMarkers() {
     setMapOnAll(null);
 }
 
-// Removes the Wikipedia Links window of the screen by changing its visibility in css
-function clearWikiWindow() {
-    $('#wikipedia-container').css('visibility','hidden');
+// Function that creates the title of the Google info window and tells the user 
+// the name of the marker/place they have selected, this function is called when 
+// a marker is clicked
+function loadplaceTitle(){
+    var $placeTitleElem = $('#placeTitle');
+    $placeTitleElem.text("");
+    $placeTitleElem.text('You are at ' + linkName + '');
+}
+
+// Function that loads a street view of the marker/place the user has clicked on. 
+// It uses the linkAddress created on marker click as a variable for Google street view api.
+function loadStreetView(){
+    var $streetViewElem = $('#streetViewWindow');
+    var streetview = "";
+    $streetViewElem.empty();
+    // Replace all the spaces with +
+    var place = linkAddress.replace(/ /g, "+");
+    streetView = "https://maps.googleapis.com/maps/api/streetview?size=250x140&location=" + place;
+    // Append the image generated by api to the streetViewWindow, used in Google info window
+    $streetViewElem.append('<img src="' + streetView + '">');
 }
 
 // Function that changes the visibility of Wikipedia Link’s window to show on screen, 
 // sends request to Wikipedia website with the name of the marker or list item that is 
 // clicked. It then displays links supplied by Wikipedia 
 function loadWikiLinks() {
-
     // Make the #wikipedia-container visible on screen
     $('#wikipedia-container').css('visibility','visible');
-
+    // Use the markerName variable to store variable with a name from either the list of 
+    // spots or markers on the map
+    var markerName = linkName;
+    
     var $wikiElem = $('#wikipedia-links');
 
     // Clear the old text from the window
-    $wikiElem.text("");
-
-    // Use the MarkerName variable to store variable with a name from either the list of 
-    // spots or markers on the map
-    var MarkerName = linkName;
-
+    $wikiElem.empty();
+    $wikiElem.contents().remove();
+    
     // Stores the url used for ajax request using the MarkerName variable
-    var wikiU = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + MarkerName + "&format=json&callback=wikiCallback";
-
+    var wikiU = "https://en.wikipedia.org/w/api.php?action=opensearch&search=" + markerName + "&format=json&callback=wikiCallback";
+    
     // Handles errors by displaying a message if wikipedia website does not respond after a set
     // period of time
     var wikiRequestTimeout = setTimeout(function(){
         $wikiElem.text("Failed to get wikipedia resources");
     }, 8000);
 
+    
     // Ajax request: if successful starts a function that loads the wikipedia generated links 
     $.ajax({
         url: wikiU,
@@ -301,7 +340,7 @@ function loadWikiLinks() {
         // If there are no wikipedia links it displays a message saying there are none
         if (articleList.length === 0) {
                 $wikiElem.append('<p>This spot has no wiki articles</p>');
-        };
+        }
 
         // Loops through the articleList array and puts each link in a list in the 
         // Wikipedia Links window
@@ -309,9 +348,8 @@ function loadWikiLinks() {
             var articleStr = articleList[i];
             var url = "http://en.wikipedia.org/wiki/" + articleStr;
             $wikiElem.append('<li><a href = "'+ url +'">'+articleStr+'</a></li>');
-        };
+        }
         clearTimeout(wikiRequestTimeout);
-        console.log(response);
         }
     });
     return false;
@@ -321,12 +359,27 @@ function loadWikiLinks() {
 var ViewModel = function() {
     var self= this;
 
+    // Function used to generate the list of all the map markers, 
+    // stores the individual marker’s name and type
+    self.mark = function(data){
+        this.name = ko.observable(data.name);
+        this.type = ko.observable(data.type);
+    };
+
     //Populates the list of all amenities on the map using the Mark function, 
     //list contains names of the amenities stored as title in markerArray 
     this.markerList = ko.observableArray("");
     mapMarkers.forEach(function(markerItem) {
-        self.markerList.push(new Mark(markerItem));
+        self.markerList.push(new self.mark(markerItem));
     });
+
+    // Array of items used by autocomplete function created from markerList array
+    var availableTags = [];
+    for(i in self.markerList()){
+        if (self.markerList().hasOwnProperty(i)){
+            availableTags.push(self.markerList()[i].name());
+        }   
+    }
 
     // Filters the markers displayed on the map leaving just the one the user 
     // selected from the list of marker names
@@ -340,15 +393,59 @@ var ViewModel = function() {
             if(markerItem.name() === markerArray[i].title){
                 createMarker(i);
             } 
-        }(marker, i);
-        // Store the clicked list item name into the linkName variable that 
-        // is used by the function displaying Wikipedia links window and Wikipedia 
-        // links connected to that name
-        linkName = markerItem.name();
-        
-        // Calling the loadWikiLinks function to load the links and make the 
-        // link’s window visible
-        loadWikiLinks();
+        }
+    };
+
+    this.searchedMarkerName = ko.observable("");
+
+    // Filtering function activated when user searches 
+    // through text input, on pressing the <Search>button 
+    // or <ENTER>  Shows only searched place on map and in the 
+    // list of maker/place names. If the input is not a name of 
+    // the marker a message is displayed saying “This place 
+    // is not currently maped!”
+    this.filterSearchedLocation = function() {   
+        that = this;
+        // Remove all the markers from the map
+        clearMarkers();
+
+        // Remove the existing message text ("This place is not currently maped!")
+        document.getElementById("message").innerHTML = "";
+
+        // Variables used to check if the if conditions are met and to 
+        // then display a message or not
+        var emptySearch = 1;
+        var populateList = "All";
+
+        // Loop through the markerArray, if the marker’s title is equal to 
+        // the searched name, display that marker on the map and remove all 
+        // the map markers names from the list of names
+        for (var i = 0; i < markerArray.length; i++) {
+            if(this.searchedMarkerName() === markerArray[i].title){
+                createMarker(i);
+                emptySearch = 0;
+                populateList = 1;
+                // remove all the map markers names from the list of names
+                mapMarkers.forEach(function(markerItem) {
+                    self.markerList.pop();
+                });
+            }        
+        }
+
+        // Go through all the mapMarkers, if the name is same as the searched name, 
+        // put that name on the list of marker names
+        mapMarkers.forEach(function(markerItem) {
+            if(markerItem.name === that.searchedMarkerName()){
+                self.markerList.push(new self.mark(markerItem));
+            }
+        });
+
+        // If the searched input is not equal to any marker name the variable empty search 
+        // will be set to 1 in the first if statement above. A message is displayed.
+        if(emptySearch === 1){
+            document.getElementById("message").innerHTML = "This place is not currently maped!";
+            emptySearch = 0;  
+        }
     };
 
     // Seting the optionValues, used by the dropdown list, to the 
@@ -359,17 +456,13 @@ var ViewModel = function() {
     // filtering the markers and the list
     this.selectedOptionValue = ko.observable("");
 
-    var lastMapMarkerType = "All"
+    var lastMapMarkerType = "All";
     // Filtering function activated when user clicks on the list and item on it, 
     // passes the selected item as an argument, this filter will display all the 
     // markers and list items of the same type (park, food, sport or culture)
     this.filterAllOfType = function(item) {
-
-        // Clear Wikipedia Links window, since no single marker or list item 
-        // is selected here
-        clearWikiWindow();
         // Check if the selected type is not equal to lastMarkerType
-        if (!(item.selectedOptionValue() === lastMapMarkerType)) {
+        if ((item.selectedOptionValue() !== lastMapMarkerType)) {
             // If true remove all the markers from the map
             clearMarkers();
             // If true remove all the items from the list
@@ -380,14 +473,13 @@ var ViewModel = function() {
             // Go through all the mapMarkers, if the type is the same as the 
             // selected type, create a list item for that marker
             mapMarkers.forEach(function(markerItem) {
-                console.log(item.selectedOptionValue());
                 if (item.selectedOptionValue()=== markerItem.type){
-                    self.markerList.push(new Mark(markerItem));
+                    self.markerList.push(new self.mark(markerItem));
                 }
                 // If the selected type from the dropdown list is "All", 
                 // create all of the original list items
                 else if(item.selectedOptionValue() === "All") {
-                    self.markerList.push(new Mark(markerItem)); 
+                    self.markerList.push(new self.mark(markerItem)); 
                 }   
             });
             
@@ -402,10 +494,18 @@ var ViewModel = function() {
                 else if(item.selectedOptionValue() === "All") {
                        createMarker(i); 
                 }
-            }(marker, i);
+            }
             lastMapMarkerType = item.selectedOptionValue();
         }
     };
+
+    // Autocomplete function for the text input filter, allows 
+    // the user to select from the list of names in a dropdown list
+    $(function() {
+        $( "#autoComplete" ).autocomplete({
+            source: availableTags
+        });
+    });
 };
 // Apply knockout bindings to the ViewModel
-ko.applyBindings(new ViewModel);
+ko.applyBindings(new ViewModel());

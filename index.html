@@ -9,26 +9,65 @@
 
     <link rel="icon" href="images/parkmarker.png" type="image/png">
 	<link href="style/style.css" rel="stylesheet" type="text/css">
-    	
-	<script src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+    <script src="js/lib/knockout-3.4.0.js"></script>
+    <script src="js/lib/jquery.min.js"></script>
+    <script src="js/lib/jquery-1.10.2.js"></script>
+    <script src="js/lib/jquery-ui.js"></script>
+
+
 </head>
 <body>
     <div id="googlemaps"></div>
     <div id="searchList">
         <h2>Explore the city of Zagreb!</h2>
-    	<p><select data-bind="options: optionValues, value: selectedOptionValue, click: filterAllOfType"></select></p>
-      	<ul data-bind= "foreach: markerList">
-            <li>
-                <span data-bind="text: name, click: $parent.filterThisLocation"></span>
-            </li>
-    	</ul>
+        <div id="searchable">
+            <form  id="search" data-bind="submit: filterSearchedLocation">
+                <p>Search by place name: <input id="autoComplete" data-bind="textInput: searchedMarkerName" /></p>
+                <button type="submit">Search</button>
+                <p id="message"></p>
+            </form>
+            <p>Search by place type:</p>
+        	<p><select data-bind="options: optionValues, value: selectedOptionValue, click: filterAllOfType"></select></p>
+            <p>Or just select a place from the list:</p>
+          	<ul data-bind= "foreach: markerList">
+                <li>
+                    <span data-bind="text: name, click: $parent.filterThisLocation"></span>
+                </li>
+        	</ul>
+        </div>
     </div>
     <div id="wikipedia-container">
-        <h4 id="wikipedia-header">Wikipedia Links</h3>
+        <h3 id="placeTitle"></h3>
+        <h4 id="wikipedia-header">Wikipedia Links</h4>
         <ul id="wikipedia-links"></ul>
+        <div id="streetViewWindow"></div>
     </div>
-	<script src="js/lib/knockout-3.4.0.js"></script>
-    <script src="js/lib/jquery.min.js"></script>
+	
     <script src="js/app.js"></script>
+    
+    <script>
+        // Function called on successful Google map api callback, calls the 
+        // onGoogleLoad function, defined in app.js, that puts the map and the markers 
+        // on the screen
+        function googleLoaded() {
+            onGoogleLoad();
+        }
+        // Function called on error from Google map api. An alert is displayed, and an
+        // old historical map is displayed instead of Google Maps. The searchList is
+        // hidden since there is no interactivity with static historic background.
+        function googleLoadError() {
+            var $mapElem = $('#googlemaps');
+            var $searchElem = $('#searchList');
+            $mapElem.css("overflow-y", "hidden");
+            // An old historical map is displayed instead of Google Maps
+            $mapElem.css("background-image", "url('images/zagrebmap_1822.jpg')");
+            // The searchList is hidden 
+            $searchElem.css('visibility','hidden');
+            alert("Sorry, seems like Google Maps can't load… Take a look at Zagreb's historic map instead!");
+        }
+    </script>   
+    <script src="https://maps.googleapis.com/maps/api/js?callback=googleLoaded" onerror="googleLoadError()" async></script>
 </body>
 </html>
