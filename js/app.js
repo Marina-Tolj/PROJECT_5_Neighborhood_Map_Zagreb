@@ -37,7 +37,7 @@ var mapMarkers= [
             type: "Park",
             imgSrc: "images/parkmarker.png",
             position: [45.808663, 15.978522],
-            address: "Park Zrinjevac"
+            address: "Park Josipa Jurja Strossmayera"
         },
         {
             name: "Dom Sportova",
@@ -176,13 +176,15 @@ function createMarker(data) {
     // links for selected spot. LoadStreetView function takes the marker’s address, stored in the linkAddress 
     // variable, as an argument and displays a Google street view image below the  Wikipedia links. 
     // The LoadplaceTitle appends the name of the marker on the top of the info window.
-    google.maps.event.addListener(marker, 'click', function markerEvents() {   
+    google.maps.event.addListener(marker, 'click', function markerEvents() {
+        infowindow.setContent(infoContent); 
         linkName = mapMarkers[data].name;
         linkAddress = mapMarkers[data].address;
+        infowindow.open(map, marker);
         loadWikiLinks();
         loadStreetView();
         loadplaceTitle();
-        infowindow.open(map, marker);
+        
 
         // Adding an animation when user clicks on the individual marker, 
         // the marker will bounce until user clicks on it again or after a period of time
@@ -205,7 +207,7 @@ function createMarker(data) {
 
 // Setting the variable infoContent to be the contents of wikipedia-container, 
 // infoContent is used by Google Map infowindow
-var infoContent = document.getElementById("wikipedia-container");
+var infoContent = '<div id="wikipedia-container">'+'<h3 id="placeTitle"></h3>'+'<h4 id="wikipedia-header">Wikipedia Links</h4>'+'<ul id="wikipedia-links"></ul>'+'<div id="streetViewWindow"></div>'+'</div>';
 
 var infowindow;
 
@@ -213,11 +215,8 @@ var infowindow;
 // Function is called on Google Map api successful callback 
 function onGoogleLoad(){
 
-    // Creating Google infowindow and setting the content to above 
-    // created variable infoContent
-    infowindow = new google.maps.InfoWindow({
-    content: infoContent
-    });
+    // Creating Google infowindow 
+    infowindow = new google.maps.InfoWindow();
 
     // Function for generating Google Map
     function displayGoogleMaps() {
@@ -308,7 +307,7 @@ function loadStreetView(){
 // clicked. It then displays links supplied by Wikipedia 
 function loadWikiLinks() {
     // Make the #wikipedia-container visible on screen
-    $('#wikipedia-container').css('visibility','visible');
+    //$('#wikipedia-container').css('visibility','visible');
     // Use the markerName variable to store variable with a name from either the list of 
     // spots or markers on the map
     var markerName = linkName;
@@ -373,14 +372,6 @@ var ViewModel = function() {
         self.markerList.push(new self.mark(markerItem));
     });
 
-    // Array of items used by autocomplete function created from markerList array
-    var availableTags = [];
-    for(i in self.markerList()){
-        if (self.markerList().hasOwnProperty(i)){
-            availableTags.push(self.markerList()[i].name());
-        }   
-    }
-
     // Filters the markers displayed on the map leaving just the one the user 
     // selected from the list of marker names
     this.filterThisLocation = function(markerItem) {
@@ -416,12 +407,13 @@ var ViewModel = function() {
         // then display a message or not
         var emptySearch = 1;
         var populateList = "All";
-
-        // Loop through the markerArray, if the marker’s title is equal to 
-        // the searched name, display that marker on the map and remove all 
-        // the map markers names from the list of names
+        var searchedString = this.searchedMarkerName().toLowerCase();
+        // Loop through the markerArray, if the marker’s title, or part of it 
+        // (transformed all to lowercase letters) is contained in the string 
+        // input made by user, display that marker or markers on the map and 
+        // in the list, remove all other markers from the map and list
         for (var i = 0; i < markerArray.length; i++) {
-            if(this.searchedMarkerName() === markerArray[i].title){
+            if(markerArray[i].title.toLowerCase().search(searchedString) !== -1){
                 createMarker(i);
                 emptySearch = 0;
                 populateList = 1;
@@ -435,7 +427,8 @@ var ViewModel = function() {
         // Go through all the mapMarkers, if the name is same as the searched name, 
         // put that name on the list of marker names
         mapMarkers.forEach(function(markerItem) {
-            if(markerItem.name === that.searchedMarkerName()){
+            var searchedStringMarker = that.searchedMarkerName().toLowerCase();
+            if(markerItem.name.toLowerCase().search(searchedStringMarker) !== -1){
                 self.markerList.push(new self.mark(markerItem));
             }
         });
@@ -498,14 +491,7 @@ var ViewModel = function() {
             lastMapMarkerType = item.selectedOptionValue();
         }
     };
-
-    // Autocomplete function for the text input filter, allows 
-    // the user to select from the list of names in a dropdown list
-    $(function() {
-        $( "#autoComplete" ).autocomplete({
-            source: availableTags
-        });
-    });
 };
 // Apply knockout bindings to the ViewModel
 ko.applyBindings(new ViewModel());
+

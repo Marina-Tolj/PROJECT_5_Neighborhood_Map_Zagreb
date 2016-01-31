@@ -20,11 +20,13 @@
 </head>
 <body>
     <div id="googlemaps"></div>
+    <label for="searchList-toggle">Click me to toggle menu</label>  
+    <input type="checkbox" id="searchList-toggle"/> 
     <div id="searchList">
         <h2>Explore the city of Zagreb!</h2>
         <div id="searchable">
-            <form  id="search" data-bind="submit: filterSearchedLocation">
-                <p>Search by place name: <input id="autoComplete" data-bind="textInput: searchedMarkerName" /></p>
+            <form  id="search" data-bind="event: {submit: filterSearchedLocation, keyup: filterSearchedLocation}">
+                <p>Search by place name: <input id="autoComplete" data-bind="textInput: searchedMarkerName"/></p>
                 <button type="submit">Search</button>
                 <p id="message"></p>
             </form>
@@ -38,13 +40,7 @@
         	</ul>
         </div>
     </div>
-    <div id="wikipedia-container">
-        <h3 id="placeTitle"></h3>
-        <h4 id="wikipedia-header">Wikipedia Links</h4>
-        <ul id="wikipedia-links"></ul>
-        <div id="streetViewWindow"></div>
-    </div>
-	
+
     <script src="js/app.js"></script>
     
     <script>

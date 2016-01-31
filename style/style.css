@@ -39,7 +39,7 @@
 }
 
 #wikipedia-container {
-  visibility:hidden;
+  visibility:visible;
   position: relative;
   float: right; 
   z-index: 1; /* The z-index should be higher than Google Maps */
@@ -75,7 +75,34 @@
   overflow-y: hidden;
 }
 
+label {
+  visibility:hidden;
+  width: 360px;
+  margin-left: 100px;
+  padding: 10px;
+  padding-left: 20px;
+  background: black;
+  height: 10px;
+  opacity: .45; 
+  color: white;
+  font-family: Arial;
+  z-index: 1;
+  }
+
 @media only screen and (max-width: 750px) {
+label {
+  visibility:visible;
+  cursor: pointer;
+  }
+#searchList-toggle {
+  display: none; /* hide the checkbox */
+}
+#searchList {
+  display: none;
+}
+#searchList-toggle:checked + #searchList {
+  display: block;
+}
   #searchList {
     height:300px; 
     width:30%; 
