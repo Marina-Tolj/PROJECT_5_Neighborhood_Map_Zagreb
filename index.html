@@ -28,7 +28,7 @@
             <form  id="search" data-bind="event: {submit: filterSearchedLocation, keyup: filterSearchedLocation}">
                 <p>Search by place name: <input id="autoComplete" data-bind="textInput: searchedMarkerName"/></p>
                 <button type="submit">Search</button>
-                <p id="message"></p>
+                <p id="message" data-bind="text: message"></p>
             </form>
             <p>Search by place type:</p>
         	<p><select data-bind="options: optionValues, value: selectedOptionValue, click: filterAllOfType"></select></p>
@@ -50,18 +50,9 @@
         function googleLoaded() {
             onGoogleLoad();
         }
-        // Function called on error from Google map api. An alert is displayed, and an
-        // old historical map is displayed instead of Google Maps. The searchList is
-        // hidden since there is no interactivity with static historic background.
+        // Function called on error from Google map api. An alert is displayed.
         function googleLoadError() {
-            var $mapElem = $('#googlemaps');
-            var $searchElem = $('#searchList');
-            $mapElem.css("overflow-y", "hidden");
-            // An old historical map is displayed instead of Google Maps
-            $mapElem.css("background-image", "url('images/zagrebmap_1822.jpg')");
-            // The searchList is hidden 
-            $searchElem.css('visibility','hidden');
-            alert("Sorry, seems like Google Maps can't load… Take a look at Zagreb's historic map instead!");
+            alert("Sorry, seems like Google Maps can't load…");
         }
     </script>   
     <script src="https://maps.googleapis.com/maps/api/js?callback=googleLoaded" onerror="googleLoadError()" async></script>

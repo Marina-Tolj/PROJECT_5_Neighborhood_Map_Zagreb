@@ -382,13 +382,13 @@ var ViewModel = function() {
         // the seleted name from the list, display that marker on the map
         for (var i = 0; i < markerArray.length; i++) {
             if(markerItem.name() === markerArray[i].title){
-                createMarker(i);
+                google.maps.event.trigger(createMarker(i), 'click'); 
             } 
         }
     };
 
     this.searchedMarkerName = ko.observable("");
-
+    this.message = ko.observable();
     // Filtering function activated when user searches 
     // through text input, on pressing the <Search>button 
     // or <ENTER>  Shows only searched place on map and in the 
@@ -401,7 +401,8 @@ var ViewModel = function() {
         clearMarkers();
 
         // Remove the existing message text ("This place is not currently maped!")
-        document.getElementById("message").innerHTML = "";
+        //document.getElementById("message").innerHTML = "";
+        this.message("");
 
         // Variables used to check if the if conditions are met and to 
         // then display a message or not
@@ -436,7 +437,8 @@ var ViewModel = function() {
         // If the searched input is not equal to any marker name the variable empty search 
         // will be set to 1 in the first if statement above. A message is displayed.
         if(emptySearch === 1){
-            document.getElementById("message").innerHTML = "This place is not currently maped!";
+            //document.getElementById("message").innerHTML = "This place is not currently maped!";
+            this.message("This place is not currently maped!");
             emptySearch = 0;  
         }
     };

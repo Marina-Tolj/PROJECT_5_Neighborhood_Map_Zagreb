@@ -116,3 +116,14 @@ label {
   width: 80%;
   }
 }
+
+.mapError {
+  height: 100%; 
+  width: 100%; 
+  position:absolute; 
+  top: 0; 
+  left: 0; 
+  z-index: 0;
+  background-image": url('../images/zagrebmap_1822.jpg');
+  overflow-y: hidden;
+}
