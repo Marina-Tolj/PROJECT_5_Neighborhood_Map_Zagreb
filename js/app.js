@@ -210,8 +210,8 @@ function createMarker(data) {
 var infoContent = '<div id="wikipedia-container">'+'<h3 id="placeTitle"></h3>'+'<h4 id="wikipedia-header">Wikipedia Links</h4>'+'<ul id="wikipedia-links"></ul>'+'<div id="streetViewWindow"></div>'+'</div>';
 
 var infowindow;
-
-
+var bounds;
+var map;
 // Function is called on Google Map api successful callback 
 function onGoogleLoad(){
 
@@ -243,6 +243,14 @@ function onGoogleLoad(){
         for (var i = 0; i < mapMarkers.length; i++) {
             createMarker(i);
         }
+
+        bounds = new google.maps.LatLngBounds();
+
+        for (var i = 0; i < markerArray.length; i++) {
+            bounds.extend(markerArray[i].position);
+            map.fitBounds(bounds);
+            console.log(bounds);
+        }  
     }
     // Starts the function for generating the Google map and all markers 
     // on the initial load of the window 

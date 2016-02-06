@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <meta name="viewport" content="initial-scale=1">
 
-	<title>ZAGREB MAP</title>
+    <title>ZAGREB MAP</title>
 
     <link rel="icon" href="images/parkmarker.png" type="image/png">
-	<link href="style/style.css" rel="stylesheet" type="text/css">
+    <link href="style/style.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
     <script src="js/lib/knockout-3.4.0.js"></script>
@@ -31,13 +31,13 @@
                 <p id="message" data-bind="text: message"></p>
             </form>
             <p>Search by place type:</p>
-        	<p><select data-bind="options: optionValues, value: selectedOptionValue, click: filterAllOfType"></select></p>
+            <p><select data-bind="options: optionValues, value: selectedOptionValue, click: filterAllOfType"></select></p>
             <p>Or just select a place from the list:</p>
-          	<ul data-bind= "foreach: markerList">
+            <ul data-bind= "foreach: markerList">
                 <li>
                     <span data-bind="text: name, click: $parent.filterThisLocation"></span>
                 </li>
-        	</ul>
+            </ul>
         </div>
     </div>
 
