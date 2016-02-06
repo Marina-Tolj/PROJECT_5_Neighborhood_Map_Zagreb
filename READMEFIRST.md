@@ -1,6 +1,6 @@
 # Neighborhood MAP of the city of Zagreb
 
-*To run the app download all the files and open index.html file in any browser.*
+*To run the app download all the files and open index.html file in any browser. Or visit a live page here http://marina-tolj.github.io/PROJECT_5_Neighborhood_Map_Zagreb*
 
 On initial load the app shows Google map with different map markers on it and a window with dropdown 
 list and list of all the map marker names. User can interact with the map in several ways, by clicking 
@@ -22,7 +22,7 @@ there will be a message that that place is not mapped yet.
 The dropdown list lets the user select from the types (categories) of markers. All of the markers are 
 currently split into four different types: park, food, sport and culture. When the user selects a type, 
 only the markers with that type will appear on the map and in the list of marker names. If the users 
-selects ìAllî from the dropdown list, then all of the markers will appear on the map. Selecting any of 
+selects ‚ÄúAll‚Äù from the dropdown list, then all of the markers will appear on the map. Selecting any of 
 the types from the dropdown list will also hide the Wikipedia Links window, since all the links are 
 specific to a single place (marker).
 
