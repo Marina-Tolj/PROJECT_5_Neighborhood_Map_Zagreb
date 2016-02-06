@@ -1,6 +1,6 @@
 # Neighborhood MAP of the city of Zagreb
 
-*To run the app download all the files and open index.html file in any browser. Or visit a live page here http://marina-tolj.github.io/PROJECT_5_Neighborhood_Map_Zagreb*
+*To run the app download all the files and open index.html file in any browser. Or visit a live page here http://marina-tolj.github.io./*
 
 On initial load the app shows Google map with different map markers on it and a window with dropdown 
 list and list of all the map marker names. User can interact with the map in several ways, by clicking 
