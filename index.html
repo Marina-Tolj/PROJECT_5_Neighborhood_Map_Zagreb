@@ -10,15 +10,12 @@
     <link href="style/style.css" rel="stylesheet">
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 
-    
-
-
 </head>
 <body>
     <div id="googlemaps"></div>
     <label for="searchList-toggle">Click me to toggle menu</label>  
     <input type="checkbox" id="searchList-toggle"/> 
-    <div class="searchList">
+    <div id="searchList">
         <h2>Explore the city of Zagreb!</h2>
         <div class="searchable">
             <form  class="search" data-bind="event: {submit: filterSearchedLocation, keyup: filterSearchedLocation}">

@@ -7,7 +7,7 @@
   z-index: 0; /* Set z-index to 0 as it will be on a layer below the serch and list bar */
 }
      
-.searchList { 
+#searchList { 
   position: relative;
   float: left; 
   z-index: 1; /* The z-index should be higher than Google Maps */
@@ -23,15 +23,15 @@
   font-family: Arial;
 }
 
-.searchList li:hover {
+#searchList li:hover {
   font-weight: bold;
 }
 
-.searchList li {
+#searchList li {
   padding-bottom: 5px;
 }
 
-.searchList p select {
+#searchList p select {
   width: 300px;
   font-family: Verdana;
   padding-left: 30px;
@@ -103,22 +103,22 @@ label {
   #searchList-toggle {
     display: none; /* hide the checkbox */
   }
-  .searchList {
+  #searchList {
     display: none;
   }
-  #searchList-toggle:checked + .searchList {
+  #searchList-toggle:checked + #searchList {
     display: block;
   }
-  .searchList {
+  #searchList {
     height: 300px; 
     width: 30%; 
     opacity: 1; 
     background-color: #707070; 
     overflow: hidden; 
-    overflow-y: croll;
+    overflow-y: scroll;
     min-width: 190px;
   }
-  .searchList p select {
+  #searchList p select {
     width: 80%;
   }
   .wikipedia-container {
